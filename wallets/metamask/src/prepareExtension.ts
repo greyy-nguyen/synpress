@@ -1,31 +1,28 @@
-import path from 'node:path'
-import { downloadFile, ensureCacheDirExists, unzipArchive } from '@synthetixio/synpress-cache'
-import fs from 'fs-extra'
+import path from "node:path";
+import { ensureCacheDirExists } from "@synthetixio/synpress-cache";
+import fs from "fs-extra";
 
-export const DEFAULT_METAMASK_VERSION = '11.9.1'
-export const EXTENSION_DOWNLOAD_URL = `https://github.com/MetaMask/metamask-extension/releases/download/v${DEFAULT_METAMASK_VERSION}/metamask-chrome-${DEFAULT_METAMASK_VERSION}.zip`
+export const DEFAULT_METAMASK_VERSION = "11.9.1";
+export const EXTENSION_DOWNLOAD_URL = `https://github.com/MetaMask/metamask-extension/releases/download/v${DEFAULT_METAMASK_VERSION}/metamask-chrome-${DEFAULT_METAMASK_VERSION}.zip`;
+
+export const RONIN_FILE_NAME = `ronin-wallet-chrome`;
 
 export async function prepareExtension(forceCache = true) {
-  let outputDir = ''
+  let outputDir = "";
   if (forceCache) {
-    outputDir = ensureCacheDirExists()
+    outputDir = ensureCacheDirExists();
   } else {
-    outputDir = process.platform === 'win32' ? `file:\\\\\\${outputDir}` : path.resolve('./', 'downloads')
+    outputDir =
+      process.platform === "win32"
+        ? `file:\\\\\\${outputDir}`
+        : path.resolve("./", "downloads");
 
     if (!(await fs.exists(outputDir))) {
-      fs.mkdirSync(outputDir)
+      fs.mkdirSync(outputDir);
     }
   }
 
-  const downloadResult = await downloadFile({
-    url: EXTENSION_DOWNLOAD_URL,
-    outputDir,
-    fileName: `metamask-chrome-${DEFAULT_METAMASK_VERSION}.zip`
-  })
+  const filePath = path.join(outputDir, RONIN_FILE_NAME);
 
-  const unzipResult = await unzipArchive({
-    archivePath: downloadResult.filePath
-  })
-
-  return unzipResult.outputPath
+  return filePath;
 }

@@ -1,9 +1,8 @@
-import { chromium } from 'playwright-core'
-import type { WalletSetupFunction } from '../defineWalletSetup'
-import { waitForExtensionOnLoadPage } from './waitForExtensionOnLoadPage'
+import { chromium } from "playwright-core";
+import type { WalletSetupFunction } from "../defineWalletSetup";
 
 // Inlining the sleep function here cause this is one of the few places in the entire codebase where sleep should be used!
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function createCacheForWalletSetupFunction(
   extensionPath: string,
@@ -12,33 +11,38 @@ export async function createCacheForWalletSetupFunction(
   fileName: string
 ) {
   // TODO: Extract & Make a constant.
-  const browserArgs = [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`]
+  const browserArgs = [
+    `--disable-extensions-except=${extensionPath}`,
+    `--load-extension=${extensionPath}`,
+  ];
 
   if (process.env.HEADLESS) {
-    browserArgs.push('--headless=new')
+    browserArgs.push("--headless=new");
   }
 
   const context = await chromium.launchPersistentContext(contextCacheDirPath, {
     headless: false,
-    args: browserArgs
-  })
-
-  const extensionPage = await waitForExtensionOnLoadPage(context)
+    args: browserArgs,
+  });
+  const page = await context.newPage();
+  await page.goto(
+    "chrome-extension://fnjhmkhhmkbjkkabndcnnogagogbneec/src/pages/newtab/new-tab.html?#//"
+  );
 
   try {
-    await walletSetup(context, extensionPage)
+    await walletSetup(context, page);
   } catch (e) {
     throw new Error(
       `[CORE] Encountered an error while executing wallet setup function from file ${fileName}. Error message: ${
         (e as Error).message
       }`
-    )
+    );
   }
 
   // We sleep here to give the browser enough time to save the context to the disk.
-  await sleep(3000) // TODO: Extract & Make this timeout configurable.
+  await sleep(3000); // TODO: Extract & Make this timeout configurable.
 
-  await context.close()
+  await context.close();
 
-  return
+  return;
 }
