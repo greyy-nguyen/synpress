@@ -242,6 +242,9 @@ importers:
       '@synthetixio/synpress-metamask':
         specifier: workspace:*
         version: link:../wallets/metamask
+      '@synthetixio/synpress-ronin':
+        specifier: workspace:*
+        version: link:../wallets/ronin
     devDependencies:
       '@synthetixio/synpress-tsconfig':
         specifier: 0.0.4
