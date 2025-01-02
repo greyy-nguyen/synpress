@@ -43,7 +43,8 @@ playwright/.cache
 
 ### Synpress
 
-.cache-synpress
+**/.cache-synpress/*
+!**/.cache-synpress/ronin-wallet-chrome
 
 ### Vercel
 
