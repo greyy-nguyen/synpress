@@ -52,10 +52,10 @@ export abstract class RoninWalletAbstract {
   // */
   //abstract getAccountAddress(): void;
   //
-  ///**
-  // * Connects to the dapp using the currently selected account.
-  // */
-  //abstract connectToDapp(accounts?: string[]): void;
+  /**
+   * Connects to the dapp using the currently selected account.
+   */
+  abstract connectToDapp(accounts?: string[]): void;
   //
   ///**
   // * Locks Ronin Wallet.

@@ -1,8 +1,12 @@
 import type { BrowserContext, Page } from "@playwright/test";
 import { RoninWalletAbstract } from "../type/RoninWalletAbstract";
-import { OnboardingPage } from "./pages";
-
-const RONIN_EXTENSION_ID = "fnjhmkhhmkbjkkabndcnnogagogbneec";
+import {
+  LockPage,
+  OnboardingPage,
+  SessionConnectPage,
+  SettingsPage,
+} from "./pages";
+import { RONIN_EXTENSION_ID } from "../constants";
 
 /**
  * Ronin class for interacting with the Ronin Wallet extension in Playwright tests.
@@ -22,6 +26,30 @@ export class RoninWallet extends RoninWalletAbstract {
    */
   readonly onboardingPage: OnboardingPage;
 
+  /**
+   * This property can be used to access selectors for the session connect page.
+   *
+   * @public
+   * @readonly
+   */
+  readonly sessionConnectPage: SessionConnectPage;
+
+  /**
+   * This property can be used to access selectors for the setting page.
+   *
+   * @public
+   * @readonly
+   */
+  readonly settingsPage: SettingsPage;
+
+  /**
+   * This property can be used to access selectors for the unlock page.
+   *
+   * @public
+   * @readonly
+   */
+  readonly lockPage: LockPage;
+
   constructor(
     readonly context: BrowserContext,
     readonly page: Page,
@@ -30,9 +58,18 @@ export class RoninWallet extends RoninWalletAbstract {
     super(password, RONIN_EXTENSION_ID);
 
     this.onboardingPage = new OnboardingPage(page);
+    this.sessionConnectPage = new SessionConnectPage(page);
+    this.settingsPage = new SettingsPage(page);
+    this.lockPage = new LockPage(page);
   }
 
   async importWallet(seedPhrase: string): Promise<void> {
     await this.onboardingPage.importWallet(seedPhrase, this.password);
+    await this.lockPage.unlock(this.password);
+    await this.settingsPage.changeOpenWalletMethod("popup");
+  }
+
+  async connectToDapp(accounts?: string[]): Promise<void> {
+    await this.sessionConnectPage.connectToDapp(accounts);
   }
 }
